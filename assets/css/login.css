@@ -1,0 +1,194 @@
+/* Login Premium Glass Styles */
+
+body {
+    /* Inherits background from style.css (Dark Slate) */
+    overflow: hidden;
+}
+
+.login-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 1rem;
+    position: relative;
+    z-index: 10;
+}
+
+/* Dynamic Aurora Background */
+.shape {
+    position: absolute;
+    filter: blur(100px);
+    z-index: -1;
+    border-radius: 50%;
+    opacity: 0.5;
+}
+
+.shape-1 {
+    width: 600px;
+    height: 600px;
+    background: #4f46e5;
+    /* Indigo */
+    top: -200px;
+    left: -100px;
+    animation: drift 10s infinite alternate;
+}
+
+.shape-2 {
+    width: 500px;
+    height: 500px;
+    background: #db2777;
+    /* Pink */
+    bottom: -150px;
+    right: -100px;
+    animation: drift 12s infinite alternate-reverse;
+}
+
+@keyframes drift {
+    from {
+        transform: translate(0, 0);
+    }
+
+    to {
+        transform: translate(50px, 50px);
+    }
+}
+
+/* Glass Card */
+.login-card {
+    width: 100%;
+    max-width: 440px;
+    background: rgba(30, 41, 59, 0.6);
+    /* Semi-transparent Slate */
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    padding: 3.5rem 3rem;
+    border-radius: 32px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Shine Effect */
+.login-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.05), transparent);
+    animation: shine 8s infinite;
+}
+
+@keyframes shine {
+    0% {
+        left: -100%;
+    }
+
+    20% {
+        left: 100%;
+    }
+
+    100% {
+        left: 100%;
+    }
+}
+
+.login-header {
+    margin-bottom: 2.5rem;
+}
+
+.logo-circle {
+    width: 72px;
+    height: 72px;
+    background: linear-gradient(135deg, #6366f1, #ec4899);
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2rem;
+    color: white;
+    margin: 0 auto 1.5rem;
+    box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+    transform: rotate(-5deg);
+}
+
+.login-header h2 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 800;
+    margin-bottom: 0.5rem;
+    letter-spacing: -0.5px;
+}
+
+.login-header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+/* Inputs */
+.input-group label {
+    color: #cbd5e1;
+    font-weight: 500;
+    font-size: 0.9rem;
+    margin-bottom: 0.6rem;
+    text-align: left;
+    display: block;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 1rem 1.25rem !important;
+    background: rgba(15, 23, 42, 0.6) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 16px !important;
+    color: white !important;
+    font-size: 1rem !important;
+    transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input-group input:focus {
+    transform: scale(1.02);
+    border-color: #6366f1 !important;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15) !important;
+    background: rgba(15, 23, 42, 0.8) !important;
+}
+
+/* Button */
+.btn-login {
+    width: 100%;
+    padding: 1rem;
+    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    color: white;
+    border: none;
+    border-radius: 16px;
+    font-weight: 700;
+    font-size: 1.1rem;
+    cursor: pointer;
+    margin-top: 1.5rem;
+    transition: 0.3s;
+    box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
+}
+
+.btn-login:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 15px 35px rgba(99, 102, 241, 0.5);
+    filter: brightness(1.1);
+}
+
+.error-message {
+    background: rgba(239, 68, 68, 0.1);
+    color: #f87171;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    margin-top: 1.5rem;
+    border-radius: 12px;
+}
+
+.login-footer {
+    margin-top: 2.5rem;
+    color: #64748b;
+    font-size: 0.8rem;
+}

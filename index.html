@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - Student System</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        darkbg: '#0f172a',
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+
+<body
+    class="bg-gray-900 text-gray-200 font-sans antialiased selection:bg-violet-500 selection:text-white overflow-hidden relative">
+
+    <!-- Background Effects -->
+    <div class="fixed inset-0 z-0">
+        <div
+            class="absolute top-[-10%] left-[-10%] w-96 h-96 bg-violet-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob">
+        </div>
+        <div
+            class="absolute top-[-10%] right-[-10%] w-96 h-96 bg-fuchsia-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000">
+        </div>
+        <div
+            class="absolute bottom-[-20%] left-[20%] w-96 h-96 bg-indigo-600 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000">
+        </div>
+    </div>
+
+    <div class="relative z-10 min-h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8">
+
+        <div
+            class="w-full max-w-md bg-gray-800/50 backdrop-blur-xl border border-gray-700/50 shadow-2xl rounded-2xl p-8 transform transition-all hover:scale-[1.01] duration-300">
+            <div class="text-center mb-8">
+                <div
+                    class="mx-auto h-16 w-16 bg-gradient-to-br from-violet-500 to-fuchsia-500 rounded-xl flex items-center justify-center shadow-lg shadow-violet-500/20 mb-4">
+                    <i class="fas fa-graduation-cap text-2xl text-white"></i>
+                </div>
+                <h2
+                    class="text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-violet-400 to-fuchsia-400 tracking-tight">
+                    Student Portal
+                </h2>
+                <p class="mt-2 text-sm text-gray-400">
+                    Masuk untuk mengelola data mahasiswa
+                </p>
+            </div>
+
+            <form id="loginForm" class="space-y-6">
+                <div>
+                    <label for="username" class="block text-sm font-medium text-gray-300 mb-2">Username</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-user text-gray-500"></i>
+                        </div>
+                        <input type="text" id="username" required
+                            class="block w-full pl-10 pr-3 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 text-gray-200 placeholder-gray-500 sm:text-sm transition-all"
+                            placeholder="admin">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300 mb-2">Password</label>
+                    <div class="relative">
+                        <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                            <i class="fas fa-lock text-gray-500"></i>
+                        </div>
+                        <input type="password" id="password" required
+                            class="block w-full pl-10 pr-3 py-2.5 bg-gray-900/50 border border-gray-700 rounded-lg focus:ring-2 focus:ring-violet-500 focus:border-violet-500 text-gray-200 placeholder-gray-500 sm:text-sm transition-all"
+                            placeholder="••••••">
+                    </div>
+                </div>
+
+                <div id="loginError" class="hidden rounded-lg bg-red-900/30 p-3 border border-red-800/50">
+                    <div class="flex">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-circle-exclamation text-red-400"></i>
+                        </div>
+                        <div class="ml-3">
+                            <p class="text-sm text-red-400">Username atau password salah!</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div>
+                    <button type="submit"
+                        class="group relative w-full flex justify-center py-2.5 px-4 border border-transparent text-sm font-semibold rounded-lg text-white bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-violet-500 focus:ring-offset-gray-900 transition-all duration-200 shadow-lg shadow-violet-600/20">
+                        <span class="absolute left-0 inset-y-0 flex items-center pl-3">
+                            <i class="fas fa-arrow-right text-violet-300 group-hover:text-white transition-colors"></i>
+                        </span>
+                        Masuk Sistem
+                    </button>
+                </div>
+            </form>
+
+            <div class="mt-8 text-center">
+                <p class="text-xs text-gray-500">
+                    &copy; 2025 BY GILANG NOVRIZAL
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Animation Keyframes -->
+    <style>
+        @keyframes blob {
+            0% {
+                transform: translate(0px, 0px) scale(1);
+            }
+
+            33% {
+                transform: translate(30px, -50px) scale(1.1);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) scale(0.9);
+            }
+
+            100% {
+                transform: translate(0px, 0px) scale(1);
+            }
+        }
+
+        .animate-blob {
+            animation: blob 7s infinite;
+        }
+
+        .animation-delay-2000 {
+            animation-delay: 2s;
+        }
+
+        .animation-delay-4000 {
+            animation-delay: 4s;
+        }
+    </style>
+    <script src="assets/js/main.js"></script>
+</body>
+
+</html>
