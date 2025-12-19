@@ -374,6 +374,28 @@ function handleSearch() {
     const type = document.getElementById('searchBy').value;
     const algo = document.getElementById('searchAlgo').value;
 
+    // --- SEARCH VALIDATION ---
+    if (!query) {
+        showToast("Masukkan kata kunci pencarian!", 'error');
+        return;
+    }
+
+    if (type === 'name') {
+        // Must be string at least 4 characters
+        const isString = /^[a-zA-Z\s]*$/.test(query);
+        if (query.length < 4 || !isString) {
+            showToast("Data harus string minimal 4 karakter", 'error');
+            return;
+        }
+    } else if (type === 'id') {
+        // Must be integer at least 4 characters
+        const isInteger = /^\d+$/.test(query);
+        if (query.length < 4 || !isInteger) {
+            showToast("data harus integer minimal 4 angka", 'error');
+            return;
+        }
+    }
+
     showLoading(`Mencari ${query}...`);
 
     setTimeout(() => {
