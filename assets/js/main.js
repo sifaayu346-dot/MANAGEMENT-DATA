@@ -18,6 +18,13 @@ const complexityLog = document.getElementById('complexityLog');
 document.addEventListener('DOMContentLoaded', () => {
     loadFromStorage();
 
+    // Check for persistent toast
+    const pendingToast = sessionStorage.getItem('pendingToast');
+    if (pendingToast) {
+        showToast(pendingToast);
+        sessionStorage.removeItem('pendingToast');
+    }
+
     // Check if we are on dashboard or input page
     if (document.getElementById('studentTableBody')) {
         renderTable();
@@ -184,12 +191,15 @@ if (studentForm) {
 
             resetForm();
 
+            // Use persistent toast for redirect
+            sessionStorage.setItem('pendingToast', currentEditId ? "Data berhasil diperbarui!" : "Data berhasil disimpan!");
+
             console.log("Redirecting to dashboard...");
             window.location.href = 'dashboard.html';
 
         } catch (error) {
             console.error(error);
-            alert("Error: " + error.message);
+            showToast("Error: " + error.message, 'error');
         }
     });
 
@@ -320,42 +330,43 @@ function handleSort() {
         default: key = 'id';
     }
 
-    let result;
+    showLoading("Sedang mengurutkan data...");
 
-    // 1. Functional Run (to get sorted data)
-    // Deep copy to avoid mutating original state directly during sort ops if not intended
-    const deepCopyForFunctional = JSON.parse(JSON.stringify(students)).map(s => new Student(s.id, s.name, s.major, s.gpa));
+    setTimeout(() => {
+        let result;
 
-    // Note: Assuming 'major' is the property name in Student class, but main.js uses 'major' in loadFromStorage but 'department' in some copy lines. 
-    // Let's check the Student class definition. Based on loadFromStorage: new Student(..., major, ...).
-    // Correcting the mapping in the copy above to use 'major'.
+        // 1. Functional Run (to get sorted data)
+        const deepCopyForFunctional = JSON.parse(JSON.stringify(students)).map(s => new Student(s.id, s.name, s.major, s.gpa));
 
-    switch (algo) {
-        case 'bubble': result = Algorithms.bubbleSort(deepCopyForFunctional, key, order); break;
-        case 'selection': result = Algorithms.selectionSort(deepCopyForFunctional, key, order); break;
-        case 'insertion': result = Algorithms.insertionSort(deepCopyForFunctional, key, order); break;
-        case 'merge': result = Algorithms.mergeSort(deepCopyForFunctional, key, order); break;
-        case 'shell': result = Algorithms.shellSort(deepCopyForFunctional, key, order); break;
-    }
-
-    // 2. Benchmark Run (Performance Measurement)
-    const start = performance.now();
-    for (let i = 0; i < BENCHMARK_ITERATIONS; i++) {
-        // Light clone for speed in benchmark
-        const benchData = [...students];
         switch (algo) {
-            case 'bubble': Algorithms.bubbleSort(benchData, key, order); break;
-            case 'selection': Algorithms.selectionSort(benchData, key, order); break;
-            case 'insertion': Algorithms.insertionSort(benchData, key, order); break;
-            case 'merge': Algorithms.mergeSort(benchData, key, order); break;
-            case 'shell': Algorithms.shellSort(benchData, key, order); break;
+            case 'bubble': result = Algorithms.bubbleSort(deepCopyForFunctional, key, order); break;
+            case 'selection': result = Algorithms.selectionSort(deepCopyForFunctional, key, order); break;
+            case 'insertion': result = Algorithms.insertionSort(deepCopyForFunctional, key, order); break;
+            case 'merge': result = Algorithms.mergeSort(deepCopyForFunctional, key, order); break;
+            case 'shell': result = Algorithms.shellSort(deepCopyForFunctional, key, order); break;
         }
-    }
-    const end = performance.now();
-    const avgTime = ((end - start) / BENCHMARK_ITERATIONS).toFixed(5);
 
-    renderTable(result.data);
-    logPerformance(`Sorting ${algo.toUpperCase()} (${order.toUpperCase()})`, avgTime, result.complexity);
+        // 2. Benchmark Run (Performance Measurement)
+        const start = performance.now();
+        for (let i = 0; i < BENCHMARK_ITERATIONS; i++) {
+            const benchData = [...students];
+            switch (algo) {
+                case 'bubble': Algorithms.bubbleSort(benchData, key, order); break;
+                case 'selection': Algorithms.selectionSort(benchData, key, order); break;
+                case 'insertion': Algorithms.insertionSort(benchData, key, order); break;
+                case 'merge': Algorithms.mergeSort(benchData, key, order); break;
+                case 'shell': Algorithms.shellSort(benchData, key, order); break;
+            }
+        }
+        const end = performance.now();
+        const avgTime = ((end - start) / BENCHMARK_ITERATIONS).toFixed(5);
+
+        renderTable(result.data);
+        logPerformance(`Sorting ${algo.toUpperCase()} (${order.toUpperCase()})`, avgTime, result.complexity);
+
+        hideLoading();
+        showToast(`Data berhasil diurutkan (${algo})!`);
+    }, 600);
 }
 
 function handleSearch() {
@@ -363,52 +374,54 @@ function handleSearch() {
     const type = document.getElementById('searchBy').value;
     const algo = document.getElementById('searchAlgo').value;
 
-    if (!query) {
-        alert("Masukkan kata kunci pencarian!");
-        return;
-    }
+    showLoading(`Mencari ${query}...`);
 
-    // Map 'name'/'id' to object keys
-    const key = type === 'id' ? 'id' : 'name';
+    setTimeout(() => {
+        // Map 'name'/'id' to object keys
+        const key = type === 'id' ? 'id' : 'name';
 
-    // Pre-sort for Binary Search
-    let searchData = [...students];
-    if (algo === 'binary') {
-        const sortRes = Algorithms.mergeSort(searchData, key, 'asc');
-        searchData = sortRes.data;
-    }
-
-    let result;
-
-    // 1. Functional Run
-    switch (algo) {
-        case 'linear': result = Algorithms.linearSearch(students, key, query); break;
-        case 'sequential': result = Algorithms.sequentialSearch(students, key, query); break;
-        case 'binary': result = Algorithms.binarySearch(searchData, key, query); break;
-    }
-
-    // 2. Benchmark Run
-    const start = performance.now();
-    for (let i = 0; i < BENCHMARK_ITERATIONS; i++) {
-        switch (algo) {
-            case 'linear': Algorithms.linearSearch(students, key, query); break;
-            case 'sequential': Algorithms.sequentialSearch(students, key, query); break;
-            case 'binary': Algorithms.binarySearch(searchData, key, query); break;
+        // Pre-sort for Binary Search
+        let searchData = [...students];
+        if (algo === 'binary') {
+            const sortRes = Algorithms.mergeSort(searchData, key, 'asc');
+            searchData = sortRes.data;
         }
-    }
-    const end = performance.now();
-    const avgTime = ((end - start) / BENCHMARK_ITERATIONS).toFixed(5);
 
-    if (result.found) {
-        // Determine result display based on single vs multiple
-        const displayData = Array.isArray(result.data) ? result.data : [result.data];
-        renderTable(displayData);
-        logPerformance(`Search ${algo.toUpperCase()} (Found)`, avgTime, result.complexity);
-    } else {
-        document.getElementById('studentTableBody').innerHTML = ''; // Clear table
-        document.getElementById('emptyState').style.display = 'block';
-        logPerformance(`Search ${algo.toUpperCase()} (Not Found)`, avgTime, result.complexity);
-    }
+        let result;
+
+        // 1. Functional Run
+        switch (algo) {
+            case 'linear': result = Algorithms.linearSearch(students, key, query); break;
+            case 'sequential': result = Algorithms.sequentialSearch(students, key, query); break;
+            case 'binary': result = Algorithms.binarySearch(searchData, key, query); break;
+        }
+
+        // 2. Benchmark Run
+        const start = performance.now();
+        for (let i = 0; i < BENCHMARK_ITERATIONS; i++) {
+            switch (algo) {
+                case 'linear': Algorithms.linearSearch(students, key, query); break;
+                case 'sequential': Algorithms.sequentialSearch(students, key, query); break;
+                case 'binary': Algorithms.binarySearch(searchData, key, query); break;
+            }
+        }
+        const end = performance.now();
+        const avgTime = ((end - start) / BENCHMARK_ITERATIONS).toFixed(5);
+
+        if (result.found) {
+            // Determine result display based on single vs multiple
+            const displayData = Array.isArray(result.data) ? result.data : [result.data];
+            renderTable(displayData);
+            logPerformance(`Search ${algo.toUpperCase()} (Found)`, avgTime, result.complexity);
+            showToast(`Ditemukan ${displayData.length} data!`);
+        } else {
+            document.getElementById('studentTableBody').innerHTML = ''; // Clear table
+            document.getElementById('emptyState').style.display = 'block';
+            logPerformance(`Search ${algo.toUpperCase()} (Not Found)`, avgTime, result.complexity);
+            showToast("Data tidak ditemukan", 'error');
+        }
+        hideLoading();
+    }, 600);
 }
 
 // --- HELPER --
@@ -489,7 +502,7 @@ function loadFromStorage() {
 
 function downloadJSON() {
     if (!students || students.length === 0) {
-        alert("Tidak ada data untuk diexport!");
+        showToast("Tidak ada data untuk diexport!", 'error');
         return;
     }
     const dataStr = JSON.stringify(students.map(s => s.toJSON()), null, 2);
@@ -504,27 +517,81 @@ function downloadJSON() {
     document.body.removeChild(a);
 }
 
-function uploadData(input) {
+window.uploadJSON = function (input) {
     const file = input.files[0];
     if (!file) return;
 
+    showLoading("Mengimport data...");
+
     const reader = new FileReader();
     reader.onload = function (e) {
-        try {
-            const json = JSON.parse(e.target.result);
-            if (!Array.isArray(json)) throw new Error("Format File JSON tidak valid!");
+        setTimeout(() => {
+            try {
+                const json = JSON.parse(e.target.result);
+                if (!Array.isArray(json)) throw new Error("Format File JSON tidak valid!");
 
-            // Validate and Merge
-            const newStudents = json.map(j => Student.fromJSON(j));
-            students = newStudents; // Replace current state
-            saveToStorage();
-            renderTable();
-            alert("Data berhasil diimport!");
-        } catch (err) {
-            alert("Gagal membaca file: " + err.message);
-        }
+                // Validate and Merge
+                const newStudents = json.map(j => Student.fromJSON(j));
+                students = newStudents; // Replace current state
+                saveToStorage();
+                renderTable();
+                showToast("Data berhasil diimport!");
+            } catch (err) {
+                showToast("Gagal membaca file: " + err.message, 'error');
+            } finally {
+                hideLoading();
+                input.value = ''; // Reset input
+            }
+        }, 800);
     };
     reader.readAsText(file);
+}
+
+// --- UI HELPERS ---
+
+function showLoading(text = "Mohon tunggu sebentar...") {
+    const overlay = document.getElementById('loadingOverlay');
+    const label = document.getElementById('loadingText');
+    if (overlay) {
+        if (label) label.innerText = text;
+        overlay.classList.remove('hidden');
+        overlay.style.opacity = '1';
+    }
+}
+
+function hideLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    if (overlay) {
+        overlay.style.opacity = '0';
+        setTimeout(() => overlay.classList.add('hidden'), 300);
+    }
+}
+
+function showToast(message, type = 'success') {
+    const container = document.getElementById('toastContainer');
+    if (!container) return;
+
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+
+    const icon = type === 'success' ? 'fa-check' : 'fa-exclamation-triangle';
+
+    toast.innerHTML = `
+        <div class="toast-icon">
+            <i class="fas ${icon}"></i>
+        </div>
+        <div class="toast-content">
+            <div class="text-sm font-semibold">${message}</div>
+        </div>
+    `;
+
+    container.appendChild(toast);
+
+    // Auto remove after 3s
+    setTimeout(() => {
+        toast.classList.add('toast-closing');
+        setTimeout(() => toast.remove(), 400);
+    }, 3000);
 }
 
 // View Switcher (Portal Logic)
